@@ -1,0 +1,19 @@
+<Configuration status="info" name="log4j2" packages="">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} %X{serviceId} %X{trace} -%msg%n" />
+        </Console>
+        <SplunkHttp name="http" batchCount="3" batchInterval="5000" url="http://172.16.2.34:8088" token="847E1467-D399-452B-BFE6-2D9BE30FB531" disableCertificateValidation="yes" eventBodySerializer="com.mservice.sf.log.SFLogEventSerializer">
+            <PatternLayout pattern="%m"/>
+        </SplunkHttp>
+        <SFRedis name="redis" host="172.16.13.22" port="6379" database="0" password="mservice" key="SF_ERROR_LOG" service="GW-ADYEN" >
+        </SFRedis>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="http"/>
+            <AppenderRef ref="redis" level="error"/>
+        </Root>                                                                                                                                                                              │
+    </Loggers>                                                                                                                                                                               │
+</Configuration>

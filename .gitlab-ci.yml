@@ -1,0 +1,21 @@
+include:
+  - project: 'devops/momo-projects-template/ci-template'
+    ref: "master"
+    file: 'single-module-gitflow/.gitlab-ci.yml'
+
+variables:
+  BASE_DOCKER_IMAGE: $JDK_21
+  MVN_ALWAYS_UPDATE_REPO: "YES"
+  USING_VERSION_UAT_FOR_DEVELOP_IN_PARENT: "NO"
+  DEPLOY_PROD_FROM_DEVELOP_BRANCH: "NO"
+  MVN_OPTIONS: "-Dfs.env=-dev"
+  GROUP_ID_IN_PARENT: "com.mservice.fs"
+  ARTIFACT_ID_IN_PARENT: "fs-suites"
+  # AUTO TRIGGER TESTING PROJECT
+  AUTO_TRIGGER_CI_PROJECT: "YES"
+  PROJECT_TRIGGER_ID: "4739"
+
+.tags_executor:
+  image: $BASE_DOCKER_IMAGE
+  tags:
+    - k8s-runner

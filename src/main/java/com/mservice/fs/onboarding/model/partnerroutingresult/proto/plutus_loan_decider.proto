@@ -1,0 +1,230 @@
+syntax = "proto3";
+
+option java_outer_classname = "PlutusLoanDeciderProto";
+
+package plutus.v1;
+
+
+//response get
+message GetLoanDeciderResponse {
+  // unique id for each request
+  string request_id = 1;
+  // error code of response
+  ErrorMessage error_message = 2;
+  // unix timestamp in milliseconds
+  int64 response_timestamp = 3;
+  // loan decider information
+  LoanDeciderRecord loan_decider_record = 4;
+  // source request
+  string source_id = 5;
+  //The response code for a request
+  int64 response_code = 6;
+  // internal request timestamp
+  int64 internal_request_timestamp = 7;
+  // internal response timestamp
+  int64 internal_response_timestamp = 8;
+  // SLA
+  int64 sla = 9;
+  // App session id from App
+  string app_session_id = 10;
+  // decision engine name
+  string decision_engine_name = 23;
+  // decision engine version
+  string decision_engine_version = 24;
+  // decision engine status
+  // alexis.v1.DecisionEngineStatus decision_engine_status = 25;
+}
+
+
+message LoanDeciderRecord {
+  // Momo unique agentId for each momo wallet
+  int64 agent_id = 1;
+  // each branch maps to a particular code
+  string loan_product_code = 2;
+  // id of loan application which is created when user create loan application
+  string momo_loan_app_id = 3;
+  // the status of loan application
+  LoanAppStatus loan_app_status = 4;
+  // name of selected loan package
+  string selected_loan_packages = 5;
+  // decision for a loan request
+  LoanDeciderStatus loan_decider_status = 6;
+  // a group of the Lending business
+  ProductGroup product_group = 7;
+  // an unique id for each product
+  string product_id = 8;
+  // an id for each merchant
+  string merchant_id = 9;
+  // credit score of Momo user
+  double momo_credit_score = 10;
+  // list of the loan rules
+  repeated LoanRule loan_rule = 11;
+  // a list of the loan actions
+  repeated LoanAction loan_action = 12;
+  // message type (screen type)
+  LoanInfoMessageType message_type = 13;
+  // Rule experiment information for partner
+  // ExpInfo exp_info = 14;
+  //An id for each lender
+  Lender lender_id = 15;
+  // kyc info for requesting to CV
+  // KycData kyc_data = 18;
+  // response profile
+  ResponseProfile profile = 19;
+  // model version
+  string model_version = 20;
+  // response merchant profile
+  // ResponseMerchantProfile merchant_profile = 21;
+  // experiment tag
+  string experiment_tag = 22;
+}
+
+message ResponseProfile {
+  //national ID from the request of BE
+  string national_id_number = 1;
+  //national ID when having multi-NID
+  string national_id_number_two = 2;
+  // income info status
+  string income_info_status = 3;
+  // segment that user belongs to
+  string segment_user = 4;
+  // income score of user
+  double income_score = 5;
+}
+
+
+message LoanRule {
+  string rule_id = 1;
+  string rule_name = 2;
+  double rule_value = 3;
+  string rule_description = 4;
+  string rule_extra_data = 5;
+}
+
+message LoanAction {
+  string action_id = 1;
+  string action_name = 2;
+  string action_description = 3;
+  int32 action_order = 4;
+  int64 action_value = 5;
+  int64 action_timestamp = 6;
+  string action_group = 7;
+}
+
+enum LoanAppStatus {
+  // UNKNOWN loan status
+  LOAN_STATUS_UNKNOWN = 0;
+  // loan status when user does not have any loan
+  LOAN_STATUS_NEW = 1;
+  // Loan status when user come back to fill in IN-PROGRESS application form
+  LOAN_STATUS_IN_PROGRESS = 2;
+  // Loan status when user finished fill loan application form and waiting for loan decision
+  LOAN_STATUS_PENDING = 3;
+  // Loan status when user's loan was REJECTED
+  LOAN_STATUS_REJECTED = 4;
+  // Loan status when user's loan was ACCEPTED
+  LOAN_STATUS_ACCEPTED = 5;
+  // Loan status when user's loan was DISBURSED
+  LOAN_STATUS_DISBURSED = 6;
+  // Loan status when user's loan was CANCELED by partner, no penalty for user
+  LOAN_STATUS_CANCELED = 7;
+  // Loan status when the loan is available for user, especially for credit card type
+  LOAN_STATUS_ACTIVED = 8;
+  // Loan status when the (credit card) loan ends. Contract between user and lender invalid.
+  LOAN_STATUS_DEACTIVED = 9;
+  // Loan status when user's card was LOCKED by partner, no penalty for user
+  LOAN_STATUS_LOCKED = 10;
+  // Loan status when user fill out the form incorrectly or violate a certain rule and got rejected by BE Service
+  LOAN_REJECTED_BY_BE_SERVICE = 11;
+  // Loan status when it got liquidated by user
+  LOAN_STATUS_LIQUIDATION = 12;
+  // Loan status when it got rejected by AI
+  LOAN_STATUS_LOAN_DECIDER_REJECT = 13;
+}
+
+enum LoanDeciderStatus {
+  UNKNOWN_DECIDER = 0;
+  APPROVE = 1;
+  REJECT = 2;
+  REVIEW = 3;
+  IN_PROGRESS = 4;
+}
+
+
+// type of product
+enum ProductGroup {
+  UNKNOWN_PRODUCT_GROUP = 0;
+  CASH_LOAN = 1;
+  PAYLATER = 2;
+  OVER_DRAFT = 3;
+}
+
+enum LoanInfoMessageType {
+  UNKNOWN_LOG = 0 ;
+  START_SCREEN_LOG = 1;
+  MID_SCREEN_LOG = 2;
+  SUMMARY_SCREEN_LOG = 3;
+  OTP_REQUEST_LOG = 4;
+  OTP_RESPONSE_LOG = 5;
+  LOAN_FINAL_RESULT_LOG = 6;
+  LOAN_PARTNER_RESULT_LOG = 7;
+  LOAN_REPAYMENT_LOG = 8;
+  LOAN_DISBURSEMENT_LOG = 9;
+  LOAN_REFUND_LOG = 10;
+  LENDING_ACCOUNT_STATUS_LOG = 11;
+  LOAN_FINAL_SETTLEMENT_LOG = 12;
+  APPLICATION_CANCEL_LOG = 13;
+  LD_MANUAL_REVIEW_SCREEN_LOG = 14;
+  TRANSACTION_VERIFICATION_SCREEN_LOG = 15;
+  OFFER_PACKAGE_RESULT_LOG = 16;
+}
+
+
+//// file alexis.proto
+enum Lender {
+  // default unknown lender
+  UNKNOWN_LENDER = 0;
+  // all lender
+  ALL_LENDER = 1;
+  // TP Bank lender
+  TP_BANK = 2;
+  // Amber lender
+  AMBER = 3;
+  // Flik lender
+  FLIK = 4;
+  // MCREDIT
+  MCREDIT = 5;
+  // Ban Viet Bank
+  BVB = 6;
+  // VietNam International Bank
+  VIB = 7;
+  // ASIA COMMERCIAL JOINT STOCK BANK
+  ACB = 8;
+  // MB Bank
+  MBB = 9;
+  // MOMO LENDER
+  MOMO_LENDER = 10;
+  // HOME_CREDIT
+  HOME_CREDIT = 11;
+  // OCB - Ngan hang Phuong Dong
+  OCB = 12;
+  // OceanBank - Ngan hang Dai Duong
+  OJB = 13;
+  // VietcomBank - NH TMCP Ngoai Thuong VN
+  VCB = 14;
+  // VIET CREDIT
+  VIET_CREDIT = 15;
+  // FE
+  FE_CREDIT = 16;
+  // MBV
+  MBV = 17;
+}
+
+enum ErrorMessage {
+  UNKNOWN_ERROR_CODE = 0;
+  SUCCESS = 1;
+  INFO_NOT_FOUND = 2;
+  UNKNOWN_ERROR = 3;
+  SERVICE_UNAVAILABLE = 4;
+  TIMEOUT_INTERNAL = 5;
+}
